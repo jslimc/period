@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Date Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; line-height: 1.6; }
+    label, input { display: block; margin: 10px 0; }
+    input[type="date"], input[type="number"] { width: 100%; padding: 8px; }
+    .result { margin-top: 20px; padding: 10px; background: #f2f2f2; border-radius: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>📅 기간제 날짜 계산기</h1>
+
+  <label>🟡 최대 사용 가능 기간 (개월): <input type="number" id="duration" /></label>
+  <label>🟢 시작일자 (선택): <input type="date" id="startDate" /></label>
+  <label>🔴 종료일자 (선택): <input type="date" id="endDate" /></label>
+  <label>🟣 구매일자: <input type="date" id="purchaseDate" /></label>
+
+  <button onclick="calculateDates()">계산하기</button>
+
+  <div class="result">
+    <p><strong>실제 시작 가능일자 (E1):</strong> <span id="realStartDate">-</span></p>
+    <p><strong>실제 종료 가능일자 (F1):</strong> <span id="realEndDate">-</span></p>
+  </div>
+
+  <script>
+    function calculateDates() {
+      const duration = document.getElementById("duration").value;
+      const startInput = document.getElementById("startDate").value;
+      const endInput = document.getElementById("endDate").value;
+      const purchaseInput = document.getElementById("purchaseDate").value;
+
+      // 날짜 파싱
+      const purchaseDate = purchaseInput ? new Date(purchaseInput) : null;
+      const startDate = startInput ? new Date(startInput) : null;
+      const endDate = endInput ? new Date(endInput) : null;
+
+      // 실제 시작 가능일자
+      const realStart = startDate || purchaseDate;
+
+      // 실제 종료 가능일자 계산
+      let realEnd = null;
+      if (!duration) {
+        realEnd = endDate;
+      } else {
+        const temp = new Date(realStart);
+        temp.setMonth(temp.getMonth() + parseInt(duration));
+        realEnd = endDate ? (temp < endDate ? temp : endDate) : temp;
+      }
+
+      // 결과 출력
+      const fmt = d => d ? d.toISOString().split('T')[0] : "-";
+      document.getElementById("realStartDate").textContent = fmt(realStart);
+      document.getElementById("realEndDate").textContent = fmt(realEnd);
+    }
+  </script>
+
+</body>
+</html>
