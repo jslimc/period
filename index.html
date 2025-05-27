@@ -12,7 +12,7 @@
 </head>
 <body>
 
-  <h1>📅 기간제 날짜 계산기</h1>
+  <h1>📅 시즌권 날짜 계산기</h1>
 
   <label>🟡 최대 사용 가능 기간 (개월): <input type="number" id="duration" /></label>
   <label>🟢 시작일자 (선택): <input type="date" id="startDate" /></label>
@@ -27,21 +27,31 @@
   </div>
 
   <script>
+    // 오늘 날짜 자동 설정
+    document.addEventListener("DOMContentLoaded", function() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById("purchaseDate").value = today;
+    });
+
     function calculateDates() {
       const duration = document.getElementById("duration").value;
       const startInput = document.getElementById("startDate").value;
       const endInput = document.getElementById("endDate").value;
       const purchaseInput = document.getElementById("purchaseDate").value;
 
-      // 날짜 파싱
       const purchaseDate = purchaseInput ? new Date(purchaseInput) : null;
       const startDate = startInput ? new Date(startInput) : null;
       const endDate = endInput ? new Date(endInput) : null;
 
-      // 실제 시작 가능일자
-      const realStart = startDate || purchaseDate;
+      // ✅ 조건에 따른 실제 시작일 계산
+      let realStart;
+      if (!startDate) {
+        realStart = purchaseDate;
+      } else {
+        realStart = (purchaseDate > startDate) ? purchaseDate : startDate;
+      }
 
-      // 실제 종료 가능일자 계산
+      // ✅ 실제 종료일 계산
       let realEnd = null;
       if (!duration) {
         realEnd = endDate;
@@ -51,7 +61,6 @@
         realEnd = endDate ? (temp < endDate ? temp : endDate) : temp;
       }
 
-      // 결과 출력
       const fmt = d => d ? d.toISOString().split('T')[0] : "-";
       document.getElementById("realStartDate").textContent = fmt(realStart);
       document.getElementById("realEndDate").textContent = fmt(realEnd);
